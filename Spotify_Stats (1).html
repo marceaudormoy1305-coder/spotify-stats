@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotify Stats — Mes statistiques</title>
+<style>
+:root{--bg:#080b09;--panel:#121814;--panel2:#18211b;--green:#1ed760;--muted:#a6b2a9;--line:#27342b;--text:#f4f7f4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#14271a 0%,var(--bg) 45%);color:var(--text);font:15px/1.5 Arial,Helvetica,sans-serif}
+header{padding:28px max(20px,calc((100vw - 1150px)/2));border-bottom:1px solid var(--line);background:#080b09cc;position:sticky;top:0;backdrop-filter:blur(12px);z-index:2}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:24px;letter-spacing:.3px}.logo{width:38px;height:38px;border-radius:50%;background:var(--green);display:grid;place-items:center;color:#071009;font-size:21px}
+.brand span{color:var(--green)}.sub{color:var(--muted);margin:5px 0 0 50px;font-size:13px}
+main{max-width:1150px;margin:28px auto;padding:0 20px 50px}.hero{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:22px}.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:bold}.hero h1{font-size:clamp(28px,5vw,42px);margin:5px 0}.hero p{color:var(--muted);margin:0}
+button,.upload-label{border:0;border-radius:999px;padding:12px 18px;background:var(--green);color:#071009;font-weight:bold;cursor:pointer;display:inline-block}.upload-label input{display:none}.hint{color:var(--muted);font-size:12px;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0}.metric-label{color:var(--muted);font-size:13px}.metric{font-size:clamp(24px,3vw,34px);font-weight:800;margin:7px 0 2px;overflow-wrap:anywhere}.metric em{font-style:normal;color:var(--green)}.small{color:var(--muted);font-size:12px}
+.section{margin-top:26px}.section h2{font-size:21px;margin:0 0 13px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.list{display:flex;flex-direction:column;gap:11px}.row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center}.rank{color:var(--green);font-weight:bold}.name{font-weight:600;overflow-wrap:anywhere}.detail{font-size:12px;color:var(--muted)}.right{text-align:right;white-space:nowrap;font-size:13px}.bar{height:5px;background:#29342c;border-radius:9px;margin-top:6px;overflow:hidden}.bar span{display:block;height:100%;background:var(--green);border-radius:9px}
+.year-list{display:flex;flex-direction:column;gap:13px}.year-row{display:grid;grid-template-columns:55px minmax(0,1fr) 100px;align-items:center;gap:12px}.year{font-weight:bold}.yearbar{height:10px;background:#29342c;border-radius:8px;overflow:hidden}.yearbar span{display:block;height:100%;background:linear-gradient(90deg,#14883a,var(--green));border-radius:8px}.yearval{text-align:right;font-size:13px}
+.footer{color:var(--muted);font-size:12px;text-align:center;margin:30px 0 0}.empty{color:var(--muted);padding:20px 0}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+@media(max-width:480px){header{padding:18px 16px}.sub{margin-left:0}.grid{gap:9px}.card{padding:14px}.metric{font-size:24px}.year-row{grid-template-columns:45px minmax(0,1fr) 80px;gap:7px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">♫</div><div>SPOTIFY <span>STATS</span></div></div><div class="sub">Ton historique musical, transformé en statistiques.</div></header>
+<main>
+<div class="hero"><div><div class="eyebrow">Ton univers musical</div><h1>Mes statistiques 🎧</h1><p id="subtitle">Calculées à partir de ton historique Spotify.</p></div><div><label class="upload-label">Importer un nouveau ZIP<input id="zipInput" type="file" accept=".zip"></label><div class="hint">Le fichier est traité dans ton navigateur.</div></div></div>
+<div class="grid">
+<div class="card"><div class="metric-label">Temps d'écoute total</div><div class="metric" id="totalHours">—</div><div class="small" id="totalMinutes">—</div></div>
+<div class="card"><div class="metric-label">Écoutes enregistrées</div><div class="metric" id="totalPlays">—</div><div class="small">Titres audio présents dans le fichier</div></div>
+<div class="card"><div class="metric-label">Artiste n° 1</div><div class="metric" id="topArtist">—</div><div class="small" id="topArtistDetail"></div></div>
+<div class="card"><div class="metric-label">Année en cours dans le fichier</div><div class="metric" id="currentYear">—</div><div class="small" id="currentYearDetail"></div></div>
+</div>
+<div class="section"><h2>📈 Écoute par année</h2><div class="card"><div class="year-list" id="yearList"></div></div></div>
+<div class="section two">
+<div class="card"><h2>🎤 Top artistes</h2><div class="list" id="artistList"></div></div>
+<div class="card"><h2>🎵 Top morceaux</h2><div class="list" id="trackList"></div></div>
+</div>
+<div class="section two">
+<div class="card"><h2>💿 Top albums</h2><div class="list" id="albumList"></div></div>
+<div class="card"><h2>🔥 Tes journées records</h2><div class="list" id="dayList"></div></div>
+</div>
+<div class="footer">Spotify Stats — projet personnel non affilié à Spotify. Les chiffres dépendent des données fournies par Spotify. Les écoutes très courtes ou les lectures interrompues peuvent compter dans le nombre d'écoutes.</div>
+</main>
+<script>
+let DATA = {"total_ms":6290640755,"total_minutes":104844,"total_hours":1747.4,"total_plays":76323,"yearly":{"2018":{"ms":15794942,"plays":475},"2019":{"ms":120415913,"plays":1579},"2020":{"ms":129961318,"plays":1329},"2021":{"ms":198006532,"plays":2122},"2022":{"ms":224114539,"plays":2572},"2023":{"ms":549415702,"plays":5583},"2024":{"ms":851662149,"plays":11466},"2025":{"ms":1272499337,"plays":16626},"2026":{"ms":2928770323,"plays":34571}},"monthly":{"2018-11":{"ms":5621876,"plays":166},"2018-12":{"ms":10173066,"plays":309},"2019-01":{"ms":709454,"plays":29},"2019-02":{"ms":3610726,"plays":77},"2019-03":{"ms":1128009,"plays":18},"2019-04":{"ms":9619276,"plays":166},"2019-05":{"ms":9898654,"plays":141},"2019-06":{"ms":7199799,"plays":76},"2019-07":{"ms":4438854,"plays":99},"2019-08":{"ms":8104022,"plays":150},"2019-09":{"ms":21656711,"plays":329},"2019-10":{"ms":18054074,"plays":235},"2019-11":{"ms":4836835,"plays":65},"2019-12":{"ms":31159499,"plays":194},"2020-01":{"ms":6721537,"plays":90},"2020-02":{"ms":3831243,"plays":46},"2020-03":{"ms":430746,"plays":5},"2020-04":{"ms":2543780,"plays":15},"2020-05":{"ms":452430,"plays":4},"2020-06":{"ms":798176,"plays":13},"2020-07":{"ms":761045,"plays":12},"2020-08":{"ms":32287152,"plays":348},"2020-09":{"ms":32891392,"plays":369},"2020-10":{"ms":9581218,"plays":130},"2020-11":{"ms":16402422,"plays":123},"2020-12":{"ms":23260177,"plays":174},"2021-01":{"ms":38789881,"plays":308},"2021-02":{"ms":29293077,"plays":247},"2021-03":{"ms":10475718,"plays":173},"2021-04":{"ms":3483381,"plays":38},"2021-05":{"ms":15440388,"plays":171},"2021-06":{"ms":17560792,"plays":208},"2021-07":{"ms":31262011,"plays":399},"2021-08":{"ms":13251283,"plays":209},"2021-09":{"ms":11819459,"plays":126},"2021-10":{"ms":11849255,"plays":97},"2021-11":{"ms":4724143,"plays":52},"2021-12":{"ms":10057144,"plays":94},"2022-01":{"ms":15469456,"plays":131},"2022-02":{"ms":3196869,"plays":70},"2022-03":{"ms":8087915,"plays":114},"2022-04":{"ms":10731786,"plays":143},"2022-05":{"ms":13132636,"plays":139},"2022-06":{"ms":50703092,"plays":318},"2022-07":{"ms":28251755,"plays":279},"2022-08":{"ms":49741840,"plays":852},"2022-09":{"ms":12086049,"plays":151},"2022-10":{"ms":14508866,"plays":153},"2022-11":{"ms":8315474,"plays":139},"2022-12":{"ms":9888801,"plays":83},"2023-01":{"ms":29757554,"plays":264},"2023-02":{"ms":39976853,"plays":368},"2023-03":{"ms":65364191,"plays":568},"2023-04":{"ms":68840915,"plays":687},"2023-05":{"ms":50967642,"plays":465},"2023-06":{"ms":65590719,"plays":816},"2023-07":{"ms":26526809,"plays":368},"2023-08":{"ms":60382652,"plays":465},"2023-09":{"ms":44382914,"plays":273},"2023-10":{"ms":8509990,"plays":51},"2023-11":{"ms":21174535,"plays":307},"2023-12":{"ms":67940928,"plays":951},"2024-01":{"ms":65614993,"plays":620},"2024-02":{"ms":94802973,"plays":1280},"2024-03":{"ms":68107638,"plays":792},"2024-04":{"ms":75305649,"plays":836},"2024-05":{"ms":79965106,"plays":1136},"2024-06":{"ms":86626033,"plays":1043},"2024-07":{"ms":54819530,"plays":931},"2024-08":{"ms":50092362,"plays":1011},"2024-09":{"ms":80536577,"plays":1302},"2024-10":{"ms":59160450,"plays":840},"2024-11":{"ms":46858831,"plays":553},"2024-12":{"ms":89772007,"plays":1122},"2025-01":{"ms":89015409,"plays":1209},"2025-02":{"ms":110655176,"plays":1397},"2025-03":{"ms":94021307,"plays":1085},"2025-04":{"ms":101349673,"plays":1359},"2025-05":{"ms":108446439,"plays":2099},"2025-06":{"ms":127539795,"plays":1890},"2025-07":{"ms":109288852,"plays":1184},"2025-08":{"ms":63227125,"plays":718},"2025-09":{"ms":119735114,"plays":1492},"2025-10":{"ms":91265036,"plays":1216},"2025-11":{"ms":124686814,"plays":1340},"2025-12":{"ms":133268597,"plays":1637},"2026-01":{"ms":176123883,"plays":1765},"2026-02":{"ms":168845838,"plays":1944},"2026-03":{"ms":154579995,"plays":2289},"2026-04":{"ms":215047838,"plays":2702},"2026-05":{"ms":254320792,"plays":3247},"2026-06":{"ms":409433576,"plays":4639},"2026-07":{"ms":327091409,"plays":3770},"2026-08":{"ms":318584901,"plays":3889},"2026-09":{"ms":503289941,"plays":6040},"2026-10":{"ms":401452150,"plays":4286}},"top_artists":[{"name":"Ninho","ms":1696298931,"plays":17598},{"name":"Werenoi","ms":651785928,"plays":7975},{"name":"SCH","ms":475256887,"plays":6070},{"name":"Gazo","ms":182017825,"plays":1978},{"name":"Jul","ms":174051485,"plays":1866},{"name":"Damso","ms":136942903,"plays":1739},{"name":"SDM","ms":87488176,"plays":988},{"name":"Soolking","ms":69295685,"plays":470},{"name":"Leto","ms":66278773,"plays":856},{"name":"GIMS","ms":65167956,"plays":917},{"name":"PNL","ms":58749881,"plays":590},{"name":"Zola","ms":57335374,"plays":774},{"name":"PLK","ms":47961000,"plays":614},{"name":"Timar","ms":46979902,"plays":505},{"name":"Yaro","ms":44033940,"plays":639}],"top_tracks":[{"name":"Meleğim — Soolking","ms":52684709,"plays":256},{"name":"Skywalker Haze - A COLORS SHOW — Ninho","ms":25555954,"plays":190},{"name":"Sourire — Ninho","ms":24486664,"plays":140},{"name":"Outro — Ninho","ms":24310839,"plays":236},{"name":"Vérité — Ninho","ms":22162047,"plays":210},{"name":"Jefe — Ninho","ms":21507665,"plays":396},{"name":"Intro — Ninho","ms":21434261,"plays":261},{"name":"Binks to Binks 8 — Ninho","ms":20622133,"plays":120},{"name":"Tout ira mieux — Ninho","ms":19581028,"plays":119},{"name":"25 G — Ninho","ms":19416402,"plays":183},{"name":"Ciao — Werenoi","ms":19317890,"plays":204},{"name":"Maudit — Werenoi","ms":19141807,"plays":177},{"name":"Zipette — Ninho","ms":19062840,"plays":198},{"name":"MAUVAIS 2X (feat. Ninho) — Gazo","ms":18360456,"plays":176},{"name":"RER D — Ninho","ms":18250493,"plays":125}],"top_albums":[{"name":"M.I.L.S 3 — Ninho","ms":251064830,"plays":2459},{"name":"Jefe — Ninho","ms":228762976,"plays":2310},{"name":"NI — Ninho","ms":192577741,"plays":1966},{"name":"Destin — Ninho","ms":172433396,"plays":1960},{"name":"M.I.L.S 4 — Ninho","ms":159034878,"plays":1640},{"name":"Pyramide 2 — Werenoi","ms":152069631,"plays":1782},{"name":"M.I.L.S — Ninho","ms":139106034,"plays":1328},{"name":"Diamant Noir — Werenoi","ms":134586113,"plays":1490},{"name":"M.I.L.S 2.0 — Ninho","ms":125082022,"plays":1238},{"name":"Carré — Werenoi","ms":113413784,"plays":1364}],"top_days":[{"name":"2026-06-10","ms":37675444,"plays":295},{"name":"2026-06-09","ms":34261562,"plays":297},{"name":"2026-10-07","ms":32845696,"plays":350},{"name":"2026-08-12","ms":32408953,"plays":232},{"name":"2026-07-20","ms":31869055,"plays":267},{"name":"2026-06-11","ms":31791458,"plays":256},{"name":"2026-10-20","ms":30738884,"plays":225},{"name":"2026-10-21","ms":30738155,"plays":205},{"name":"2022-06-30","ms":29651434,"plays":136},{"name":"2026-10-14","ms":28637032,"plays":272}],"latest_year":2026,"latest_month":"2026-10","data_count":76323};
+const fmt = n => new Intl.NumberFormat('fr-FR').format(Math.round(n));
+const mins = ms => fmt(ms/60000) + ' min';
+const hours = ms => {const h=ms/3600000; return h>=1000 ? fmt(h)+' h' : h.toLocaleString('fr-FR',{maximumFractionDigits:1})+' h'};
+function listHTML(items, maxMs, withPlays=true){
+ if(!items || !items.length) return '<div class="empty">Aucune donnée disponible.</div>';
+ return items.map((x,i)=>`<div class="row"><div class="rank">${String(i+1).padStart(2,'0')}</div><div><div class="name">${esc(x.name)}</div><div class="detail">${withPlays?fmt(x.plays)+' écoutes · ':''}${mins(x.ms)}</div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.ms/Math.max(1,maxMs)*100))}%"></span></div></div><div class="right">${hours(x.ms)}</div></div>`).join('');
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function render(d){
+ document.getElementById('totalHours').textContent=hours(d.total_ms);
+ document.getElementById('totalMinutes').textContent=fmt(d.total_minutes)+' minutes au total';
+ document.getElementById('totalPlays').textContent=fmt(d.total_plays);
+ const a=d.top_artists?.[0]; document.getElementById('topArtist').textContent=a?a.name:'—';
+ document.getElementById('topArtistDetail').textContent=a?fmt(a.plays)+' écoutes · '+hours(a.ms):'';
+ document.getElementById('currentYear').textContent=d.latest_year||'—';
+ const y=d.yearly?.[String(d.latest_year)]; document.getElementById('currentYearDetail').textContent=y?hours(y.ms)+' · '+fmt(y.plays)+' écoutes':'';
+ document.getElementById('subtitle').textContent='Historique importé · '+fmt(d.total_plays)+' écoutes analysées';
+ const years=Object.entries(d.yearly||{}).sort((a,b)=>Number(a[0])-Number(b[0]));
+ const maxY=Math.max(1,...years.map(x=>x[1].ms));
+ document.getElementById('yearList').innerHTML=years.map(([yr,v])=>`<div class="year-row"><div class="year">${esc(yr)}</div><div class="yearbar"><span style="width:${Math.max(1,v.ms/maxY*100)}%"></span></div><div class="yearval">${hours(v.ms)}<div class="detail">${fmt(v.plays)} écoutes</div></div></div>`).join('');
+ document.getElementById('artistList').innerHTML=listHTML((d.top_artists||[]).slice(0,10),d.top_artists?.[0]?.ms||1);
+ document.getElementById('trackList').innerHTML=listHTML((d.top_tracks||[]).slice(0,10),d.top_tracks?.[0]?.ms||1);
+ document.getElementById('albumList').innerHTML=listHTML((d.top_albums||[]).slice(0,10),d.top_albums?.[0]?.ms||1);
+ document.getElementById('dayList').innerHTML=listHTML((d.top_days||[]).map(x=>({...x,name:new Date(x.name+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})})),d.top_days?.[0]?.ms||1);
+}
+render(DATA);
+document.getElementById('zipInput').addEventListener('change',async e=>{
+ const file=e.target.files[0]; if(!file)return;
+ if(!window.JSZip){alert("Le lecteur ZIP n'est pas encore chargé. Vérifie ta connexion internet et réessaie.");return;}
+ try{
+  const zip=await JSZip.loadAsync(file); const all=[];
+  for(const [name,obj] of Object.entries(zip.files)){
+   if(!obj.dir && /Streaming_History_Audio_.*\\.json$/i.test(name)){
+    const arr=JSON.parse(await obj.async('text')); all.push(...arr);
+   }
+  }
+  if(!all.length){alert("Aucun fichier d'historique audio trouvé dans ce ZIP.");return;}
+  const clean=[];
+  for(const r of all){
+   if(!r.ts || typeof r.ms_played!=='number')continue;
+   const date=new Date(r.ts); if(isNaN(date))continue;
+   clean.push({ts:r.ts,ms:Math.max(0,r.ms_played),artist:r.master_metadata_track_artist_name||r.master_metadata_album_artist_name||'Artiste inconnu',track:r.master_metadata_track_name||'Titre inconnu',album:r.master_metadata_album_album_name||'Album inconnu',year:date.getFullYear(),month:r.ts.slice(0,7),date:r.ts.slice(0,10)});
+  }
+  const sum={total_ms:0,total_minutes:0,total_hours:0,total_plays:clean.length,yearly:{},monthly:{},top_artists:[],top_tracks:[],top_albums:[],top_days:[],latest_year:0};
+  const ag={}; const tr={}; const al={}; const dy={};
+  for(const p of clean){
+   sum.total_ms+=p.ms; const y=String(p.year);
+   if(!sum.yearly[y])sum.yearly[y]={ms:0,plays:0};sum.yearly[y].ms+=p.ms;sum.yearly[y].plays++;
+   const add=(obj,k)=>{if(!obj[k])obj[k]={name:k,ms:0,plays:0};obj[k].ms+=p.ms;obj[k].plays++;};
+   add(ag,p.artist);add(tr,p.track+' — '+p.artist);add(al,p.album+' — '+p.artist);add(dy,p.date);
+   sum.latest_year=Math.max(sum.latest_year,p.year);
+  }
+  sum.total_minutes=Math.floor(sum.total_ms/60000);sum.total_hours=sum.total_ms/3600000;
+  const top=(obj,n)=>Object.values(obj).sort((a,b)=>b.ms-a.ms).slice(0,n);
+  sum.top_artists=top(ag,15);sum.top_tracks=top(tr,15);sum.top_albums=top(al,10);sum.top_days=top(dy,10);
+  DATA=sum;render(sum);alert("Importation terminée ! Tes statistiques ont été recalculées.");
+ }catch(err){console.error(err);alert("Impossible de lire ce ZIP. Vérifie qu'il s'agit bien de l'archive Spotify.");}
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body></html>
